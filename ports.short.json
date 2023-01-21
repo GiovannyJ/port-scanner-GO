@@ -1,0 +1,9 @@
+[
+    { "port": 20, "service": "FTP data transfer" },
+    { "port": 21, "service": "FTP (File Transfer Protocol)" },
+    { "port": 22, "service": "SSH (Secure Shell)" },
+    { "port": 69, "service": "TFTP (Trivial File Transfer Protocol)" },
+    { "port": 80, "service": "HTTP (Hypertext Transfer Protocol)" }
+]
+    
+    
