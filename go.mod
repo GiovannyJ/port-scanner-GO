@@ -1,4 +1,4 @@
-module packet-sniffing-GO
+module port-scanner-GO
 
 go 1.18
 
