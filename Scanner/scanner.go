@@ -10,19 +10,10 @@ import (
 )
 
 type ScanResult = s.ScanResult
+type Port = s.Port
 
-func tcpRoutine(c chan ScanResult, hostname string, port int, service string, wg *sync.WaitGroup){
-	defer wg.Done()
-	result := scanPort("tcp", hostname, port, service)
-	c <- result
-}
 
-func udpRoutine(c chan ScanResult, hostname string, port int, service string, wg *sync.WaitGroup){
-	defer wg.Done()
-	result := scanPort("udp", hostname, port, service)
-	c <- result
-}
-
+//merge channels together
 func merge(cs ...<-chan ScanResult) <-chan ScanResult {
 	out := make(chan ScanResult)
 	var wg sync.WaitGroup
@@ -42,12 +33,11 @@ func merge(cs ...<-chan ScanResult) <-chan ScanResult {
 	return out
 }
 
-
 func scanPort(protocol, hostname string, port int, service string) ScanResult {
 	result := ScanResult{Port: protocol + "/" + strconv.Itoa(port)}
 	address := hostname + ":" + strconv.Itoa(port)
 
-	conn, err := net.DialTimeout(protocol, address, 15*time.Second)
+	conn, err := net.DialTimeout(protocol, address, 60*time.Second)
 
 	if err != nil {
 		result.State = "Closed"
@@ -67,29 +57,24 @@ func initScan(hostname string) []ScanResult {
 
 	var results []ScanResult
 
-	tcpQueue := make(chan ScanResult, 10)
-	udpQueue := make(chan ScanResult, 10)
+	tcpQueue := make(chan ScanResult, 100)
+	udpQueue := make(chan ScanResult, 100)
 
 	ports := p.Parse("ports.json")
-
-	// ports := []int{443,22,80}
 	
-	for elem := range ports{
-		wg.Add(2)
-		go tcpRoutine(tcpQueue, hostname, ports[elem].Port, ports[elem].Service, &wg)
-		go udpRoutine(udpQueue, hostname, ports[elem].Port, ports[elem].Service, &wg)
-	}
-
-	//! asynch
-	// for elem := range ports{
-	// 	results = append(results, scanPort("tcp", hostname, ports[elem]))
-	// 	results = append(results, scanPort("udp", hostname, ports[elem]))
-	// }
-	// for i := 1; 1<5; i++{
-	// 	wg.Add(2)
-	// 	go tcpRoutine(tcpQueue, hostname, i, &wg)
-	// 	go udpRoutine(udpQueue, hostname, i, &wg)
-	// }
+	//! ADJUST AMOUNT OF WORKER DEPENDING ON YOUR SYSTEM
+	workerPool := make(chan struct{}, 100)
+	
+	for _, elem := range ports {
+        workerPool <- struct{}{} // acquire a worker
+        wg.Add(1)
+        go func(port Port) {
+            defer wg.Done()
+            defer func() { <-workerPool }() // release the worker
+            tcpQueue <- scanPort("tcp", hostname, port.Port, port.Service)
+            udpQueue <- scanPort("udp", hostname, port.Port, port.Service)
+        }(elem)
+    }
 
 	wg.Wait()
 	close(tcpQueue)
@@ -99,6 +84,7 @@ func initScan(hostname string) []ScanResult {
 	for elem := range queue{
 		results = append(results, elem)
 	}
+
 	return results
 }
 

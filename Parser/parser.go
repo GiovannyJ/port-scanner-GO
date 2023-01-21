@@ -23,12 +23,7 @@ func Parse(filename string) []Port{
 	var ports []Port
 	json.NewDecoder(file).Decode(&ports)
 	
-	portList := make([]Port, len(ports))
-	// for i, port := range ports{
-	// 	portList[i] = port
-	// }
-	copy(portList, ports)
-	return portList
+	return ports
 }
 
 func PrettyPrint(data []ScanResult){
