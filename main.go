@@ -3,9 +3,9 @@ package main
 import (
 	"fmt"
 	"sync"
-	// test "packet-sniffing-GO/Test"
-	sc "packet-sniffing-GO/Scanner"
-	s "packet-sniffing-GO/Models"
+	// test "port-scanner-GO/Test"
+	sc "port-scanner-GO/Scanner"
+	s "port-scanner-GO/Models"
 )
 
 type ScanResult = s.ScanResult

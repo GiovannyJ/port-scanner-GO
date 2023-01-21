@@ -3,8 +3,8 @@ package test
 import (
 	"testing"
 	"github.com/stretchr/testify/assert"
-	sc "packet-sniffing-GO/Scanner"
-	s "packet-sniffing-GO/Models"
+	sc "port-scanner-GO/Scanner"
+	s "port-scanner-GO/Models"
 )
 
 type ScanResult = s.ScanResult

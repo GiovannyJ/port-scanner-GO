@@ -2,8 +2,8 @@ package scanner
 
 import (
 	"net"
-	s "packet-sniffing-GO/Models"
-	p "packet-sniffing-GO/Parser"
+	s "port-scanner-GO/Models"
+	p "port-scanner-GO/Parser"
 	"strconv"
 	"sync"
 	"time"

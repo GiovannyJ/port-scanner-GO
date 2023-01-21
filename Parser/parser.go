@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
-	s "packet-sniffing-GO/Models"
+	s "port-scanner-GO/Models"
 )
 
 type Port = s.Port
