@@ -26,9 +26,13 @@ func Parse(filename string) []Port{
 	return ports
 }
 
-func PrettyPrint(data []ScanResult){
-	fmt.Println("PORT	STATE	SERVICE")
+func PrettyPrint(data []ScanResult, hostname string){
+	fmt.Println("PORT		STATE		SERVICE")
+	fmt.Println("===============================================")
 	for item := range data{
-		fmt.Println(data[item].Port,"	", data[item].State,"", data[item].Service)
-	}	
+		fmt.Printf("| %-10v | %-10v | %-10v |\n", data[item].Port, data[item].State, data[item].Service)
+		// fmt.Printf("%-10v",data[item].Port,"	", data[item].State,"", data[item].Service)
+	}
+	fmt.Println("================================================")
+	fmt.Println("Scanned:", hostname)
 }

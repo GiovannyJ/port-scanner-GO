@@ -1,18 +1,43 @@
 package cli
 
 import (
-	// "fmt"
 	"fmt"
 	"log"
 	"os"
+	
+	"github.com/urfave/cli"
+
 	s "port-scanner-GO/Models"
 	p "port-scanner-GO/Parser"
 	sc "port-scanner-GO/Scanner"
-
-	"github.com/urfave/cli"
 )
 
 type ScanResult = s.ScanResult
+
+func flagRoutine(c *cli.Context, flag string) error{
+	sp, err := sc.Scan(flag)
+	
+	if err != nil{
+		return err
+	}
+	
+	p.PrettyPrint(sp, flag)
+	return nil
+}
+
+func timeFlagRoutine(c *cli.Context, flag string) error{
+	sp, time, err := sc.TimedScan(c.String("t"))
+						
+	if err != nil {
+		fmt.Println("Time: ",time)
+		return err
+	}
+	
+	p.PrettyPrint(sp, c.String("t"))
+	fmt.Println("Time:",time)
+	return nil
+}
+
 
 func CLI(){
 	app := cli.NewApp()
@@ -21,37 +46,36 @@ func CLI(){
 
 	flags := []cli.Flag{
 		cli.StringFlag{
-			Name: "host",
+			Name: "s",
 			Value: "google.com",
+			Usage: "Scan a list of ports",
+		},
+		cli.StringFlag{
+			Name: "t",
+			Value: "google.com",
+			Usage: "Scan a list of ports and show the time it took",
+
 		},
 	}
 	
 	app.Commands = []cli.Command{
 		{
-			Name: "SP",
+			Name: "scan",
 			Usage: "Scanning Ports",
 			Flags: flags,
 			Action: func (c *cli.Context) error {
-				sp, err := sc.Scan(c.String("host"))
-				if err != nil{
-					return err
+				if c.NumFlags() > 0{
+					if !c.IsSet("t") && c.IsSet("s") {						
+						flagRoutine(c, c.String("s"))
+						
+					}else if !c.IsSet("s") && c.IsSet("t") {
+						timeFlagRoutine(c, c.String("t"))
+
+					}else{
+						log.Fatal("Only Use One Flag (-s -t)")
+						return nil
+					}
 				}
-				p.PrettyPrint(sp)
-				return nil
-			},
-		},
-		{
-			Name: "TS",
-			Usage: "Scanning Ports and giving time duration",
-			Flags: flags,
-			Action: func (c *cli.Context)  error{
-				sp, time, err := sc.TimedScan(c.String("host"))
-				if err != nil {
-					fmt.Println("Time: ",time)
-					return err
-				}
-				p.PrettyPrint(sp)
-				fmt.Println("Time:",time)
 				return nil
 			},
 		},

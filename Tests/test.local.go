@@ -27,8 +27,8 @@ func Test(){
 	proxy := make(chan string)
 	
 	go scanRoutine(server, "192.168.1.21", &wg)
-	go scanRoutine(pi, "192.168.1.20", &wg)
-	go scanRoutine(proxy, "192.168.1.8", &wg)
+	go scanRoutine(pi, "192.168.1.31", &wg)
+	go scanRoutine(proxy, "192.168.1.174", &wg)
 	
 	for i:=0; i<3; i++{
 		select{
