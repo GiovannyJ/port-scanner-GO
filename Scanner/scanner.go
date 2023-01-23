@@ -33,7 +33,7 @@ func merge(cs ...<-chan ScanResult) <-chan ScanResult {
 	return out
 }
 
-func scanPort(protocol, hostname string, port int, service string) ScanResult {
+func scanPort(protocol, hostname string, port int, service string) (ScanResult) {
 	result := ScanResult{Port: protocol + "/" + strconv.Itoa(port)}
 	address := hostname + ":" + strconv.Itoa(port)
 
@@ -52,7 +52,7 @@ func scanPort(protocol, hostname string, port int, service string) ScanResult {
 }
 
 
-func initScan(hostname string) []ScanResult {
+func initScan(hostname string) ([]ScanResult, error) {
 	var wg sync.WaitGroup
 
 	var results []ScanResult
@@ -85,17 +85,27 @@ func initScan(hostname string) []ScanResult {
 		results = append(results, elem)
 	}
 
-	return results
+
+	return results, nil
 }
 
 
-func Scan(hostname string) ([]ScanResult, string){
-	start := time.Now()
+func Scan(hostname string) ([]ScanResult, error){
+	results, err := initScan(hostname)
 	
-	results := initScan(hostname)
+	if err != nil{
+		return nil, err
+	}
 	
-	fin := time.Since(start)
-	p.PrettyPrint(results)
+	return results, nil
+}
 
-	return results, fin.String()
+func TimedScan(hostname string) ([]ScanResult, string, error){
+	start := time.Now()
+	result, err := Scan(hostname)
+	fin := time.Since(start)
+	if err != nil{
+		return nil, fin.String(), err
+	}
+	return result, fin.String(), nil
 }
