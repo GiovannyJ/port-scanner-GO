@@ -2,10 +2,9 @@ package parser
 
 import (
 	"testing"
-	s "port-scanner-GO/Models"	
 )
 
-type tests = s.TestStruct
+
 
 func TestParse(t *testing.T){
 
