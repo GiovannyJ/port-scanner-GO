@@ -26,7 +26,7 @@ func flagRoutine(c *cli.Context, flag string) error{
 }
 
 func timeFlagRoutine(c *cli.Context, flag string) error{
-	sp, time, err := sc.TimedScan(c.String("t"))
+	sp, time, err := sc.TimedScan(flag)
 						
 	if err != nil {
 		fmt.Println("Time: ",time)
@@ -47,12 +47,12 @@ func CLI(){
 	flags := []cli.Flag{
 		cli.StringFlag{
 			Name: "s",
-			Value: "google.com",
+			Value: "scanme.nmap.org",
 			Usage: "Scan a list of ports",
 		},
 		cli.StringFlag{
 			Name: "t",
-			Value: "google.com",
+			Value: "scanme.nmap.org",
 			Usage: "Scan a list of ports and show the time it took",
 
 		},
